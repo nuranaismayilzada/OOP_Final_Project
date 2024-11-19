@@ -260,6 +260,7 @@ class Menu {
 	vector<Dish>dishes;
 	double budget;
 public:
+	Menu() = default;
 	Menu(double budget) {
 		this->budget = budget;
 	}
@@ -322,8 +323,8 @@ void admiN(Menu menu) {
 		cout << "\nAdmin Paneli:" << endl;
 		cout << "1. Menyuya bax" << endl;
 		cout << "2. Menyuya yemek elave et" << endl;
-		cout << "3. Menyudan yemeyi sil" << endl;
-		cout << "4. Yemeklere inqrediyent elave et" << endl;
+		cout << "3. Inqrediyent elave et" << endl;
+		cout << "4.Ingrediyenti sil" << endl;
 		cout << "5. Cixis" << endl;
 		cout << "Seciminizi daxil edin: ";
 
@@ -336,24 +337,31 @@ void admiN(Menu menu) {
 		}
 		else if (choice == 2) {
 			string dishName;
+			double price;
 			cout << "Elave etmek istediyiniz yemeyin adini daxil edin: ";
 			getline(cin, dishName);
-			menu.Add_Dish(dishName);
+			cout << "Elave etmek istediyiniz yemeyin qiymetini daxil edin: ";
+			cin >> price;
+			cin.ignore();
+			menu.Add_Dish(dishName,price);
 		}
 		else if (choice == 3) {
-			cout << "Bu funksiya hazırda mövcud deyil." << endl;
-		}
-		else if (choice == 4) {
 			string dishName, ingredientName;
 			int quantity;
-			cout << "Inqrediyent elave etmek istediyiniz yemeyin adini daxil edin: ";
+			double cost;
+			cout << "Yemeyin adini daxil edin: ";
 			getline(cin, dishName);
-			cout << "Inqrediyentin adini daxil edin: ";
+			cout << "Ingredientin adini daxil edin: ";
 			getline(cin, ingredientName);
-			cout << "Inqrediyentin miqdarini daxil edin: ";
+			cout << "Ingredientin miqdarini: ";
 			cin >> quantity;
+			cout << "Bir ededinin qiymetini daxil edin: ";
+			cin >> cost;
 			cin.ignore();
-			menu.Add_Ingredients_To_Dish(dishName, ingredientName, quantity);
+			menu.Add_Ingredients_To_Dish(dishName, ingredientName, quantity, cost);
+		}
+		else if (choice == 4) {
+			cout << "gozleyir" << endl;
 		}
 		else if (choice == 5) {
 			cout << "Admin panelinden cixis edildi." << endl;
@@ -365,7 +373,7 @@ void admiN(Menu menu) {
 	}
 }
 
-void Start(Account& account,Menu &menu) {
+void Start(Account& account, Menu& menu) {
 	cout << "Welcome!!!" << endl;
 	cout << "1. Admin Panel  2. User Panel" << endl;
 	cout << "Enter choice: ";
@@ -402,7 +410,7 @@ void Start(Account& account,Menu &menu) {
 	else {
 		cout << "Wrong choice..." << endl;
 	}
-}
+};
 
 void main() {
 	Menu menu;
