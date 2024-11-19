@@ -14,7 +14,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 6,
+          "SelectedChildIndex": 5,
           "Children": [
             {
               "$type": "Bookmark",
@@ -37,10 +37,6 @@
               "Name": "ST:0:0:{34e76e81-ee4a-11d0-ae2e-00a0c90fffc3}"
             },
             {
-              "$type": "Bookmark",
-              "Name": "ST:0:0:{cce594b6-0c39-4442-ba28-10c64ac7e89f}"
-            },
-            {
               "$type": "Document",
               "DocumentIndex": 0,
               "Title": "Source.cpp",
@@ -48,10 +44,14 @@
               "RelativeDocumentMoniker": "Project3\\Source.cpp",
               "ToolTip": "C:\\Users\\hp\\source\\repos\\Project3\\Project3\\Source.cpp",
               "RelativeToolTip": "Project3\\Source.cpp",
-              "ViewState": "AQIAAPgAAAAAAAAAAAAAAAYBAAASAAAA",
+              "ViewState": "AQIAAOEBAAAAAAAAAAAIwPEBAAAPAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
               "WhenOpened": "2024-11-13T09:16:24.175Z",
               "EditorCaption": ""
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{cce594b6-0c39-4442-ba28-10c64ac7e89f}"
             }
           ]
         }
