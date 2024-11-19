@@ -1,0 +1,4 @@
+﻿  Source.cpp
+C:\Users\hp\source\repos\Project3\Project3\Source.cpp(328,12): warning C4566: character represented by universal-character-name '\u0131' cannot be represented in the current code page (1252)
+C:\Users\hp\source\repos\Project3\Project3\Source.cpp(391,6): warning C4326: return type of 'main' should be 'int' instead of 'void'
+  Project3.vcxproj -> C:\Users\hp\source\repos\Project3\x64\Debug\Project3.exe
