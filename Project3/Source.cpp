@@ -181,7 +181,6 @@ public:
 int Account::count = 0;
 
 
-
 class Ingredients {
 	static int idCounter;
 	int id;
@@ -189,7 +188,6 @@ class Ingredients {
 	int quantity;
 	double price;
 public:
-	Ingredients() = default;
 	Ingredients(string name, double price) {
 		this->name = name;
 		this->price = price;
@@ -198,7 +196,7 @@ public:
 		this->name = name;
 		this->quantity = quantity;
 	}
-	Ingredients(string name, int quantity,double price) {
+	Ingredients(string name, int quantity, double price) {
 		this->id = ++idCounter;
 		this->name = name;
 		this->quantity = quantity;
@@ -215,8 +213,18 @@ public:
 	int getQuantity()const {
 		return quantity;
 	}
+
 	int getPrice()const {
 		return price;
+	}
+	void setQuantity(int quantity) {
+		if (quantity >= 0)
+		{
+			this->quantity = quantity;
+		}
+		else {
+			cout << "Miqdar menfi ola bilmez" << endl;
+		}
 	}
 	void showIngredient()const {
 		cout << "Ingredient id: " << id << endl;
@@ -224,17 +232,28 @@ public:
 		cout << "Ingredient count: " << quantity << endl;
 	};
 };
-int Ingredients::idCounter = 0;
-
+int Ingredients::idCounter = 0;	
 class Dish {
 	string name;
 	vector<Ingredients>ingredients;
 	double price;
+	int Dishcount;
 public:
-	Dish(string name,double price) {
+	Dish(string name, double price) {
 		this->name = name;
 		this->price = price;
 	}
+	Dish(string name, double price, int Dishcount) {
+		this->name = name;
+		this->price = price;
+		this->Dishcount = Dishcount;
+	}
+	Dish(string name, double price, int dishCount, vector<Ingredients> ingredients)
+		: name(name), price(price), Dishcount(dishCount), ingredients(ingredients) {};
+	vector<Ingredients> getIngredients() const {
+		return ingredients;
+	}
+
 	string getName()const {
 		return name;
 	}
@@ -243,6 +262,15 @@ public:
 	}
 	int getIngredientCount()const {
 		return ingredients.size();
+	}
+	int getDishCount()const {
+		return Dishcount;
+	}
+	void setDishCount(int Dishcount) {
+		if (Dishcount >= 0)
+		{
+			this->Dishcount = Dishcount;
+		}
 	}
 	//Yemek ucun inqrediyent elave etmek
 	void addIngredient(string ingredientName, int quantity) {
@@ -266,15 +294,21 @@ public:
 
 	void Show_Dish()const {
 		cout << "Yemeyin adi: " << getName() << endl;
-		cout << "Yemeyin qiymeti: " << get_price()<<endl;
-		Show_Ingredients();
+		cout << "Yemeyin qiymeti: " << get_price() << endl;
+		cout << "Yemeyin miqdari: " << getDishCount() << endl;
 	}
 };
 class Stock {
 	vector<Ingredients> inventory;
 public:
+	vector<Ingredients>& getInventory() {
+		return inventory;
+	}
+	void Add_Ingredient(Ingredients ingredient) {
+		inventory.push_back(ingredient);
+	}
 	void addIngredient(string ingredientName, int quantity) {
-		for (auto & ingredient:inventory)
+		for (auto& ingredient : inventory)
 		{
 			if (ingredient.getName() == ingredientName)
 			{
@@ -283,12 +317,108 @@ public:
 				return;
 			}
 		}
-		inventory.push_back(Ingredients(ingredientName, quantity,0));
+		inventory.push_back(Ingredients(ingredientName, quantity, 0));
+	}
+	bool checkStock(const string& ingredientName, int requiredQuantity) {
+		for (auto& ingredient : inventory) {
+			if (ingredient.getName() == ingredientName && ingredient.getQuantity() >= requiredQuantity) {
+				return true;
+			}
+		}
+		return false;
+	}
+	void updateStock(const string& ingredientName, int usedQuantity) {
+		for (auto& ingredient : inventory) {
+			if (ingredient.getName() == ingredientName) {
+				ingredient.setQuantity(ingredient.getQuantity() - usedQuantity);
+				cout << ingredientName << " stokdan azaldildi.\n";
+				return;
+			}
+		}
+	}
+	void Add_Ingredient() {
+		cout << "Elave etmek istediyiniz ingredientin adini daxil edin:";
+		string ingredientName;
+		int ingredientCount;
+		getline(cin, ingredientName);
+		bool check = false;
+		for (auto & ing :getInventory())
+		{
+			if (ing.getName()==ingredientName)
+			{
+				check = true;
+				cout << "Bu ingrediyentden stockda movcuddur!Elave etmek istediyiniz sayi daxil edin:";
+				cin >> ingredientCount;
+				cin.ignore();
+				ing.setQuantity(ing.getQuantity() + ingredientCount);
+				cout << ingredientName << " stocka elave edildi" << endl;
+				break;
+			}
+		}
+		if (check==false)
+		{
+			cout << "Bu ingrediyentden stockda movcud deyil! Elave etmek istediyiniz sayi daxil edin:";
+			cin >> ingredientCount;
+			cin.ignore();
+			Ingredients new_ingredient(ingredientName, ingredientCount);
+			inventory.push_back(new_ingredient);
+			cout << "Inqrediyent stocka elave edildi!" << endl;
+		}
+
+	}
+	void Add_Dish_With_Ingredients(vector<Ingredients>& inventory, string dishName, double price) {
+		cout << "Yemek ucun lazim olan ingrediyent sayini daxil edin: ";
+		int ingredientCount;
+		cin >> ingredientCount;
+		cin.ignore();
+		while (ingredientCount > 0) {
+			cout << "Ingredient adini daxil edin: ";
+			string ingredientName;
+			getline(cin, ingredientName);
+			cout << "Yemek ucun bu ingrediyentden nece eded lazim oldugunu daxil edin: ";
+			int ingredientQuantity;
+			cin >> ingredientQuantity;
+			cin.ignore();
+			bool ingredientExists = false;
+			for (auto& ingredient : inventory)
+			{
+				if (ingredient.getName() == ingredientName)
+				{
+					ingredientExists = true;
+					if (ingredient.getQuantity() >= ingredientQuantity)
+					{
+						ingredient.setQuantity(ingredient.getQuantity() - ingredientQuantity);
+						cout << ingredientName << " stokdan azaldildi.\n";
+					}
+					else {
+						cout << "Stokda kifayet qeder " << ingredientName << " yoxdur.\n";
+					}
+					break;
+				}
+			}
+			if (!ingredientExists) {
+				cout << "Bu ingredient stokda movcud deyil.\n";
+			}
+			ingredientCount--;
+		}
+	}
+	void Show_All_Stock()const {
+		cout << "Stockda olan ingrediyentler:" << endl;
+		cout << "---------------------------------------------------------------" << endl;
+		for (auto& ingrediyent : inventory)
+		{
+			if (ingrediyent.getQuantity() > 0)
+			{
+				cout << "Ingrediyent name: " << ingrediyent.getName() << endl;
+				cout << "Ingrediyent sayi: " << ingrediyent.getQuantity() << endl;
+				cout << "---------------------------------------------------------------" << endl;
+			}
+		}
 	}
 };
 class Restaurant {
 	string name;
-	double budget=500;
+	double budget = 500;
 	vector<Stock> stock;
 public:
 	Restaurant() = default;
@@ -301,7 +431,7 @@ public:
 	}
 	Restaurant(string name, double budget) {
 		this->name = name;
-		this->budget =budget;
+		this->budget = budget;
 	}
 	Restaurant(string name) {
 		this->name = name;
@@ -309,6 +439,9 @@ public:
 	void showRestaurantInfo() const {
 		cout << "Restaurant Name: " << name << endl;
 		cout << "Budget: " << budget << endl;
+	}
+	void set_Budget(double newBudget) {
+		budget = newBudget;
 	}
 	void Add_Money(double amount) {
 		budget += amount;
@@ -322,28 +455,67 @@ public:
 		}
 		else {
 			cout << "Budcede kifayet qeder pul yoxdur" << endl;
-		}
-	}
+		};
+	};
 };
 class Menu {
 	vector<Dish>dishes;
 public:
-	void Add_Dish(Ingredients& ingredient,string dishName,double price) {
-		dishes.push_back(Dish(dishName,price));
-		cout << "Yemek elave edildi: " << dishName << "(" << price << "Azn)" << endl;
+	/*void Add_Dish(Dish& dish, Stock& stock, Restaurant& restaurant) {
+		vector<Ingredients> requiredIngredients = dish.getIngredients();
+
+		for (auto& ingredient : requiredIngredients) {
+			bool stockAvailable = stock.checkStock(ingredient.getName(), ingredient.getQuantity());
+			if (!stockAvailable) {
+				cout << "Stokda kifayet qeder " << ingredient.getName() << " yoxdur.\n";
+
+				double totalCost = ingredient.getQuantity() * ingredient.getPrice();
+				if (restaurant.get_Budget() >= totalCost) {
+					stock.addIngredient(ingredient.getName(), ingredient.getQuantity());
+
+					double updatedBudget = restaurant.get_Budget() - totalCost;
+					restaurant.set_Budget(updatedBudget);
+
+					cout << "Restoranin budcesinden " << totalCost << " AZN cixarildi.\n";
+				}
+				else {
+					cout << "Büdcə kifayət etmir.\n";
+				}
+			}
+		}
+	};*/
+	void Add_Dish(Dish& dish) {
+		dishes.push_back(dish);
 	}
+	
+	void Show_Menu()const {
+		if (dishes.empty())
+		{
+			cout << "Menyuda hecne yoxdur!" << endl;
+			return;
+		}
+		else {
+			cout << "\n\n\n\nMenyu: " << endl;
+			cout << "___________________________" << endl;
+			for (auto& dish : dishes)
+			{
+				dish.Show_Dish();
+				cout << "___________________________" << endl;
+			}
+		}
+	};
 	void Add_Ingredients_To_Dish(Restaurant restaurant, string dishName, string ingredientName, int quantity, double ingredientCost) {
-		if (ingredientCost*quantity>restaurant.get_Budget())
+		if (ingredientCost * quantity > restaurant.get_Budget())
 		{
 			cout << "Budcede bu qeder pul yoxdur!" << endl;
-				return;
+			return;
 		}
 		for (auto& dish : dishes)
 		{
 			if (dish.getName() == dishName)
 			{
 				dish.addIngredient(ingredientName, quantity);
-				(restaurant.Spend_Money(ingredientCost*quantity));
+				(restaurant.Spend_Money(ingredientCost * quantity));
 				cout << "Ingredient elave edildi." << ingredientName << "->" << dishName << endl;
 				cout << "Qalan budce:" << restaurant.get_Budget() << "Azn" << endl;
 				if (dish.getIngredientCount() >= 5) {
@@ -354,29 +526,81 @@ public:
 		}
 		cout << "Yemek tapilmadi" << endl;
 	}
-	void Show_Menu()const {
-		if (dishes.empty())
-		{
-			cout << "Menyuda hecne yoxdur!" << endl;
-			return;
-		}
-		else {
-			cout << "Menyu: " << endl;
-			for (auto &dish : dishes)
-			{
-				if (dish.getIngredientCount()>=5)
-				{
-					dish.Show_Dish();
-					cout << "___________________________" << endl;
-				}
-				else{
-					cout << "Yemek olmasi ucun ingrediyent sayi en azi 5 olmalidir!\nIngrediyent elave edin"<<endl;
-				}
+
+	void Add_With_Check_Dishes(Stock& stock, Menu& menu) {
+		string newDishName;
+		cout << "Yemeyin adini daxil edin: ";
+		getline(cin, newDishName);
+
+		bool dishFound = false;
+		for (auto& dish : dishes) {
+			if (dish.getName() == newDishName) {
+				dishFound = true;
+				dish.setDishCount(dish.getDishCount() + 1);
+				cout << "Bu yemek menyuda movcuddur! Sayi artirildi!" << endl;
+				return;
 			}
 		}
+
+		if (!dishFound) {
+			int ingredientCount;
+			cout << "Bu yemek ucun lazim olan ingrediyentlerin sayini daxil edin: ";
+			cin >> ingredientCount;
+			cin.ignore();
+
+			vector<Ingredients> requiredIngredients;
+
+			while (ingredientCount > 0) {
+				string ingredientName;
+				cout << "Ingrediyentin adini daxil edin: ";
+				getline(cin, ingredientName);
+
+				bool ingredientFound = false;
+
+				for (auto& ingredient : stock.getInventory()) {
+					if (ingredient.getName() == ingredientName) {
+						ingredientFound = true;
+
+						int neededQuantity;
+						cout << "Bu ingrediyentden nece eded lazim oldugunu yazin: ";
+						cin >> neededQuantity;
+						cin.ignore();
+
+						if (ingredient.getQuantity() >= neededQuantity) {
+							ingredient.setQuantity(ingredient.getQuantity() - neededQuantity);
+							cout << ingredient.getName() << " stockdan azaldildi!" << endl;
+							requiredIngredients.push_back(Ingredients(ingredientName, neededQuantity));
+						}
+						else {
+							cout << "Bu ingrediyentden stockda kifayet qeder yoxdur." << endl;
+							return;
+						}
+						break;
+					}
+				}
+
+				if (!ingredientFound) {
+					cout << "Bu ingrediyent stockda yoxdur." << endl;
+					return;
+				}
+				ingredientCount--;
+			}
+
+			double newDishPrice;
+			cout << "Yemeyin qiymetini daxil edin: ";
+			cin >> newDishPrice;
+			cin.ignore();
+
+			Dish newDish(newDishName, newDishPrice, 1, requiredIngredients);
+			menu.Add_Dish(newDish);
+
+			cout << "Stocka yeni yemek elave edildi: " << newDishName << endl;
+		}
 	}
+	
 };
-void admiN(Menu menu,Restaurant restaurant,Ingredients ingredients) {
+
+void admiN(Stock stock, Dish dish, Menu menu, Restaurant restaurant,vector<Ingredients>ingredients) {
 	string admin_Name = "nurana2002";
 	string admin_Password = "nurana123";
 	string adminName, adminPassword;
@@ -400,7 +624,9 @@ void admiN(Menu menu,Restaurant restaurant,Ingredients ingredients) {
 		cout << "3. Inqrediyent elave et" << endl;
 		cout << "4. Ingrediyenti sil" << endl;
 		cout << "5. Restoran melumatlari" << endl;
-		cout << "6. Cixis" << endl;
+		cout << "6. Menyudan yemek sil" << endl;
+		cout << "7. Stocka bax" << endl;
+		cout << "8. Cixis" << endl;
 		cout << "Seciminizi daxil edin: ";
 
 		int choice;
@@ -411,29 +637,10 @@ void admiN(Menu menu,Restaurant restaurant,Ingredients ingredients) {
 			menu.Show_Menu();
 		}
 		else if (choice == 2) {
-			string dishName;
-			double price;
-			cout << "Elave etmek istediyiniz yemeyin adini daxil edin: ";
-			getline(cin, dishName);
-			cout << "Elave etmek istediyiniz yemeyin qiymetini daxil edin: ";
-			cin >> price;
-			cin.ignore();
-			menu.Add_Dish(ingredients,dishName,price);
+			menu.Add_With_Check_Dishes(stock,menu);
 		}
 		else if (choice == 3) {
-			string dishName, ingredientName;
-			int quantity;
-			double cost;
-			cout << "Yemeyin adini daxil edin: ";
-			getline(cin, dishName);
-			cout << "Ingredientin adini daxil edin: ";
-			getline(cin, ingredientName);
-			cout << "Ingredientin miqdarini: ";
-			cin >> quantity;
-			cout << "Bir ededinin qiymetini daxil edin: ";
-			cin >> cost;
-			cin.ignore();
-			menu.Add_Ingredients_To_Dish(restaurant,dishName, ingredientName, quantity, cost);
+			stock.Add_Ingredient();
 		}
 		else if (choice == 4) {
 			cout << "gozleyir" << endl;
@@ -442,6 +649,12 @@ void admiN(Menu menu,Restaurant restaurant,Ingredients ingredients) {
 			restaurant.showRestaurantInfo();
 		}
 		else if (choice == 6) {
+			cout << "gozleyir" << endl;
+		}
+		else if (choice == 7) {
+			stock.Show_All_Stock();
+		}
+		else if (choice == 8) {
 			cout << "Admin panelinden cixis edildi." << endl;
 			break;
 		}
@@ -451,7 +664,7 @@ void admiN(Menu menu,Restaurant restaurant,Ingredients ingredients) {
 	}
 }
 
-void Start(Account& account, Menu& menu,Restaurant &restaurant,Ingredients& ingredients) {
+void Start(Account& account, Menu& menu, Restaurant& restaurant, vector<Ingredients>& ingredients, Stock& stock, Dish& dish) {
 	cout << "Welcome!!!" << endl;
 	cout << "1. Admin Panel  2. User Panel" << endl;
 	cout << "Enter choice: ";
@@ -460,7 +673,7 @@ void Start(Account& account, Menu& menu,Restaurant &restaurant,Ingredients& ingr
 	cin.ignore();
 
 	if (choice == 1) {
-		admiN(menu,restaurant,ingredients);
+		admiN(stock, dish, menu, restaurant, ingredients);
 	}
 	else if (choice == 2) {
 		cout << "1. Sign Up(Qeydiyyat)  2. Sign In (Daxil olun)" << endl;
@@ -491,11 +704,63 @@ void Start(Account& account, Menu& menu,Restaurant &restaurant,Ingredients& ingr
 };
 
 void main() {
-	Ingredients ingredients;
+	Stock stock;
 	Restaurant restaurant("Kepez");
 	Menu menu;
 	Account account;
-	while (true) {
-		Start(account,menu,restaurant,ingredients);
+	
+	Ingredients ingredient1("pamidor", 20);
+	Ingredients ingredient2("yag", 320);
+	Ingredients ingredient3("pendir", 230);
+	Ingredients ingredient4("yumurta", 50);
+	Ingredients ingredient5("kartof", 200);
+	Ingredients ingredient6("kahi", 210);
+	Ingredients ingredient7("alma", 520);
+	Ingredients ingredient8("xiyar", 100);
+	Ingredients ingredient9("duz", 920);
+	Ingredients ingredient10("istiot", 120);
+	Ingredients ingredient11("biber", 120);
+	Ingredients ingredient12("corek", 950);
+
+	vector<Ingredients>Inqrediyentler;
+
+	Inqrediyentler.push_back(ingredient1);
+	Inqrediyentler.push_back(ingredient2);
+	Inqrediyentler.push_back(ingredient3);
+	Inqrediyentler.push_back(ingredient4);
+	Inqrediyentler.push_back(ingredient5);
+	Inqrediyentler.push_back(ingredient6);
+	Inqrediyentler.push_back(ingredient7);
+	Inqrediyentler.push_back(ingredient8);
+	Inqrediyentler.push_back(ingredient9);
+	Inqrediyentler.push_back(ingredient10);
+	Inqrediyentler.push_back(ingredient11);
+	Inqrediyentler.push_back(ingredient12);
+
+
+	for (auto & ingredient : Inqrediyentler)
+	{
+		stock.Add_Ingredient(ingredient);
 	}
-}
+
+	Dish dish1("Pizza", 15.99, 20);
+	Dish dish2("Salad", 45.99, 50);
+	Dish dish3("Burger", 15.99, 150);
+	Dish dish4("Soup", 5.99, 50);
+	Dish dish5("Pasta", 35.99, 20);
+	Menu menu1;
+	vector<Dish>dishes;
+	dishes.push_back(dish1);
+	dishes.push_back(dish2);
+	dishes.push_back(dish3);
+	dishes.push_back(dish4);
+	dishes.push_back(dish5);
+	for (auto &dish :dishes)
+	{
+		menu1.Add_Dish(dish);
+	 }
+
+	while (true) {
+		Start(account, menu1, restaurant, Inqrediyentler, stock, dish1);
+	};
+};;
