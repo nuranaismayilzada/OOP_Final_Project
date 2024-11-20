@@ -260,6 +260,13 @@ public:
 		budget += amount;
 		cout << "Pul restoranin budcesine elave edildi!" << endl;
 	}
+	void Add_Money_For_Admin() {
+		double amount;
+		cout << "Elave etmek istediyiniz meblegi daxil edin: ";
+		cin >> amount;
+		budget += amount;
+		cout << "Pul restoranin budcesine elave edildi!" << endl;
+	}
 	void Spend_Money(double amount) {
 		if (budget > amount)
 		{
@@ -325,10 +332,18 @@ public:
 				cin.ignore();
 				ing.setQuantity(ing.getQuantity() + ingredientCount);
 				int totalPrice = ing.getPrice() * ingredientCount;
-				double totalRestaurantBudget = ((restaurant.get_Budget()) - totalPrice);
-				restaurant.set_Budget(totalRestaurantBudget);
-				cout << ingredientName << " stocka elave edildi" << endl;
-				break;
+				if (restaurant.get_Budget()>totalPrice)
+				{
+					double totalRestaurantBudget = ((restaurant.get_Budget()) - totalPrice);
+					restaurant.set_Budget(totalRestaurantBudget);
+					cout << ingredientName << " stocka elave edildi" << endl;
+					break;
+				}
+				else {
+					cout << "Restoranin budcesinde kifayet qeder pul yoxdur!" << endl;
+					return;
+				}
+				
 			}
 		}
 		if (check == false)
@@ -341,13 +356,18 @@ public:
 			cin.ignore();
 			Ingredients new_ingredient(ingredientName, ingredientCount, ingQiymet);
 			int totalPrice = ingredientCount * ingQiymet;
-			restaurant.set_Budget(restaurant.get_Budget() - totalPrice);
-			inventory.push_back(new_ingredient);
-			cout << "Inqrediyent stocka elave edildi!" << endl;
+			if (restaurant.get_Budget() > totalPrice)
+			{
+				restaurant.set_Budget(restaurant.get_Budget() - totalPrice);
+				inventory.push_back(new_ingredient);
+				cout << "Inqrediyent stocka elave edildi!" << endl;
+			}
+			else {
+				cout << "Restoranin budcesinde kifayet qeder pul yoxdur!" << endl;
+				return;
+			}	
 		}
-
 	}
-
 
 	void Add_Dish_With_Ingredients(vector<Ingredients>& inventory, string dishName, double price) {
 		cout << "Yemek ucun lazim olan ingrediyent sayini daxil edin: ";
@@ -574,11 +594,19 @@ public:
 					cin >> newIngPrice;
 					cin.ignore();
 					Ingredients newIngrediyent(ingredientName, newIngredientQuantity,newIngPrice);
-					stock.Add_Ingredient(newIngrediyent);
-					requiredIngredients.push_back(Ingredients(ingredientName, newIngredientQuantity));
-					cout << "Stocka bu ingrediyent daxil edildi!" << endl;
 					int totalIngPrice = newIngPrice * newIngredientQuantity;
-					restaurant.set_Budget(restaurant.get_Budget() - totalIngPrice);
+					if (restaurant.get_Budget()>totalIngPrice)
+					{
+						stock.Add_Ingredient(newIngrediyent);
+						requiredIngredients.push_back(Ingredients(ingredientName, newIngredientQuantity));
+						cout << "Stocka bu ingrediyent daxil edildi!" << endl;
+						restaurant.set_Budget(restaurant.get_Budget() - totalIngPrice);
+					}
+					else {
+						cout << "Restoranin budcesinde kifayet qeder pul yoxdur!";
+						return;
+					}
+					
 				}
 				ingredientCount--;
 			}
@@ -622,7 +650,8 @@ void admiN(Stock stock, Dish dish, Menu menu, Restaurant restaurant,vector<Ingre
 		cout << "5. Restoran melumatlari" << endl;
 		cout << "6. Menyudan yemek sil" << endl;
 		cout << "7. Stocka bax" << endl;
-		cout << "8. Cixis" << endl;
+		cout << "8. Restoranin budcesine pul elave et" << endl;
+		cout << "9. Cixis" << endl;
 		cout << "Seciminizi daxil edin: ";
 
 		int choice;
@@ -651,6 +680,9 @@ void admiN(Stock stock, Dish dish, Menu menu, Restaurant restaurant,vector<Ingre
 			stock.Show_All_Stock();
 		}
 		else if (choice == 8) {
+			restaurant.Add_Money_For_Admin();
+		}
+		else if (choice == 9) {
 			cout << "Admin panelinden cixis edildi." << endl;
 			break;
 		}
