@@ -185,10 +185,12 @@ class Ingredients {
 	double price;
 public:
 	Ingredients(string name, double price) {
+		this->id = ++idCounter;
 		this->name = name;
 		this->price = price;
 	}
 	Ingredients(string name, int quantity) {
+		this->id = ++idCounter;
 		this->name = name;
 		this->quantity = quantity;
 	}
@@ -198,7 +200,7 @@ public:
 		this->quantity = quantity;
 		this->price = price;
 	}
-	int getId()const {
+	int get_Id()const {
 		return id;
 	}
 
@@ -223,9 +225,9 @@ public:
 		}
 	}
 	void showIngredient()const {
-		cout << "Ingredient id: " << id << endl;
-		cout << "Ingredient name: " << name << endl;
-		cout << "Ingredient count: " << quantity << endl;
+		cout << "Ingredient id: " << get_Id() << endl;
+		cout << "Ingredient name: " << getName() << endl;
+		cout << "Ingredient count: " << getQuantity() << endl;
 	};
 };
 int Ingredients::idCounter = 0;
@@ -412,16 +414,39 @@ public:
 		{
 			if (ingrediyent.getQuantity() > 0)
 			{
+				cout << "Ingrediyent id:"<< ingrediyent.get_Id() << endl;
 				cout << "Ingrediyent name: " << ingrediyent.getName() << endl;
 				cout << "Ingrediyent sayi: " << ingrediyent.getQuantity() << endl;
 				cout << "---------------------------------------------------------------" << endl;
 			}
 		}
 	}
+	
+	void Delete_Ingredient() {
+		int deleteIngrediyentId;
+		cout << "Silmek istediyiniz ingrediyentin id-sini daxil edin: ";
+		cin >> deleteIngrediyentId;
+		cin.ignore();
+		bool found = false;
+		for (auto it = inventory.begin(); it != inventory.end(); ++it) {
+			if (it->get_Id() == deleteIngrediyentId) { 
+				inventory.erase(it); 
+				found = true;
+				cout << "Ingrediyent id: " << deleteIngrediyentId << " silindi." << endl;
+				break; 
+			}
+		}
+		if (!found) {
+			cout << "Ingrediyent id: " << deleteIngrediyentId << " tapilmadi." << endl;
+		}
+	}
+
 };
 
 
 class Dish {
+	static int static_id;
+	int dish_id;
 	string name;
 	vector<Ingredients>ingredients;
 	double price;
@@ -432,6 +457,8 @@ public:
 		this->price = price;
 	}
 	Dish(string name, double price, int Dishcount) {
+		static_id++;
+		dish_id=static_id;
 		this->name = name;
 		this->price = price;
 		this->Dishcount = Dishcount;
@@ -465,6 +492,9 @@ public:
 
 		ingredients.push_back(Ingredients(ingredientName, quantity));
 	}
+	int get_Id()const {
+		return dish_id;
+	}
 
 	void Show_Ingredients()const {
 		cout << "Ingredientler:" << endl;
@@ -481,11 +511,13 @@ public:
 	}
 
 	void Show_Dish()const {
+		cout << "Yemeyin idsi:" << get_Id() << endl;
 		cout << "Yemeyin adi: " << getName() << endl;
 		cout << "Yemeyin qiymeti: " << get_price() << endl;
 		cout << "Yemeyin miqdari: " << getDishCount() << endl;
 	}
 };
+int Dish::static_id = 0;
 
 class Menu {
 	vector<Dish>dishes;
@@ -493,7 +525,6 @@ public:
 	void Add_Dish(Dish& dish) {
 		dishes.push_back(dish);
 	}
-	
 	void Show_Menu()const {
 		if (dishes.empty())
 		{
@@ -622,6 +653,26 @@ public:
 			cout << "Stocka yeni yemek elave edildi: " << newDishName << endl;
 		}
 	}
+	void Delete_Dish() {
+		int deleteDishId;
+		cout << "Silmek istediyiniz yemeyin id-sini daxil edin: ";
+		cin >> deleteDishId;
+		cin.ignore();
+
+		bool found = false;
+
+		for (auto it = dishes.begin(); it != dishes.end(); ++it) {
+			if (it->get_Id() == deleteDishId) { 
+				dishes.erase(it); 
+				found = true;
+				cout << "Yemek ID: " << deleteDishId << " silindi." << endl;
+				break;
+			}
+		}
+		if (!found) {
+			cout << "Yemek id: " << deleteDishId << " tapilmadi." << endl;
+		}
+	}
 };
 
 void admiN(Stock stock, Dish dish, Menu menu, Restaurant restaurant,vector<Ingredients>ingredients) {
@@ -668,13 +719,13 @@ void admiN(Stock stock, Dish dish, Menu menu, Restaurant restaurant,vector<Ingre
 			stock.Add_Ingredient(restaurant);
 		}
 		else if (choice == 4) {
-			cout << "gozleyir" << endl;
+			stock.Delete_Ingredient();
 		}
 		else if (choice == 5) {
 			restaurant.showRestaurantInfo();
 		}
 		else if (choice == 6) {
-			cout << "gozleyir" << endl;
+			menu.Delete_Dish();
 		}
 		else if (choice == 7) {
 			stock.Show_All_Stock();
