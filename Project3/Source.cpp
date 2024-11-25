@@ -126,7 +126,6 @@ public:
 	}
 
 	void Show_Ingredients()const {
-		cout << "Ingredientler:" << endl;
 		if (ingredients.empty())
 		{
 			cout << "Ingredient yoxdur!" << endl;
@@ -163,7 +162,6 @@ public:
 		cout << "Qiymeti: " << price << " AZN" << endl;
 		cout << "--------------------------" << endl;
 	}
-	
 
 };
 int Dish::static_id = 0;
@@ -443,6 +441,7 @@ public:
 		};
 	};
 };
+class Menu;
 class Stock {
 	vector<Ingredients> inventory;
 public:
@@ -612,6 +611,7 @@ public:
 	
 	void Delete_Ingredient() {
 		int deleteIngrediyentId;
+		Show_All_Stock();
 		cout << "Silmek istediyiniz ingrediyentin id-sini daxil edin: ";
 		cin >> deleteIngrediyentId;
 		cin.ignore();
@@ -642,6 +642,19 @@ public:
 	}
 	void Add_Dish(Dish& dish) {
 		dishes.push_back(dish);
+	}
+	void removeDish(int dishId) {
+		auto it = std::find_if(dishes.begin(), dishes.end(), [dishId](const Dish& dish) {
+			return dish.get_Id() == dishId;
+			});
+
+		if (it != dishes.end()) {
+			dishes.erase(it); // Yeməyi siyahıdan silirik
+			cout << "Yemek silindi!" << endl;
+		}
+		else {
+			cout << "Bu id-li yemek tapilmadi!" << endl;
+		}
 	}
 	void Show_Menu()const {
 		if (dishes.empty())
@@ -809,10 +822,13 @@ public:
 	}
 	
 	void Dish_About() {
+		int count = 0;
 		for (auto& dish : dishes) {
+			cout << "~~~~~~~~~~~~~Yemek " << count << "~~~~~~~~~~~~~~~~~~~~~" << endl;
+			count++;
 			cout << "Dish name: " << dish.getName() << endl;
 			cout << "Dish price: " << dish.get_price() << endl;
-			cout << "-------------------Yemeyin ingrediyentleri----------------------" << endl;
+			cout << "-----Yemeyin ingrediyentleri-----" << endl;
 			dish.Show_Ingredients();
 			cout << "---------------------------" << endl;
 		}
@@ -863,7 +879,8 @@ public:
 							ing.setQuantity(ing.getQuantity() - ingMiqdar);
 							cout << ing.getName() << " elave edildi." << endl;
 						}
-						else {
+						else
+						{
 							cout << "Stockda bu inqrediyentden kifayet qeder yoxdur!" << endl;
 						}
 						break;
@@ -961,7 +978,8 @@ void admiN(Stock stock, Dish dish, Menu& menu, Restaurant restaurant, vector<Ing
 		cout << "6. Menyudan yemek sil" << endl;
 		cout << "7. Stocka bax" << endl;
 		cout << "8. Restoranin budcesine pul elave et" << endl;
-		cout << "9. Cixis" << endl;
+		cout << "9.Yemeklere inqrediyentlerle birlikde bax"<<endl;
+		cout << "10. Cixis" << endl;
 		cout << "Seciminizi daxil edin: ";
 
 		int choice;
@@ -993,6 +1011,9 @@ void admiN(Stock stock, Dish dish, Menu& menu, Restaurant restaurant, vector<Ing
 			restaurant.Add_Money_For_Admin();
 		}
 		else if (choice == 9) {
+			menu.Dish_About();
+		}
+		else if (choice == 10) {
 			cout << "Admin panelinden cixis edildi." << endl;
 			break;
 		}
