@@ -1,7 +1,7 @@
 ﻿  Source.cpp
 C:\Users\hp\source\repos\Project3\Project3\Source.cpp(47,10): warning C4244: 'return': conversion from 'const double' to 'int', possible loss of data
-C:\Users\hp\source\repos\Project3\Project3\Source.cpp(111,26): warning C4267: 'return': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\hp\source\repos\Project3\Project3\Source.cpp(518,19): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
-C:\Users\hp\source\repos\Project3\Project3\Source.cpp(716,24): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
-C:\Users\hp\source\repos\Project3\Project3\Source.cpp(973,6): warning C4326: return type of 'main' should be 'int' instead of 'void'
+C:\Users\hp\source\repos\Project3\Project3\Source.cpp(109,26): warning C4267: 'return': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\hp\source\repos\Project3\Project3\Source.cpp(560,19): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+C:\Users\hp\source\repos\Project3\Project3\Source.cpp(786,24): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+C:\Users\hp\source\repos\Project3\Project3\Source.cpp(1111,6): warning C4326: return type of 'main' should be 'int' instead of 'void'
   Project3.vcxproj -> C:\Users\hp\source\repos\Project3\x64\Debug\Project3.exe
